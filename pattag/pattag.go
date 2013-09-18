@@ -38,11 +38,25 @@ func (p *Patent) NormalizedEuclidianDistance(target *Patent) float64 {
     return p.EuclidianDistance(target) / sqrt_num_tags
 }
 
-/** 
-    given a string representing a patent number and
-    a string representing the space-delimited list of
-    tags for a patent, returns a reference to a Patent
-    object
+func (p *Patent) JaccardDistance(target *Patent) float64 {
+    var count, union float64
+    count = 0
+    union = float64(len(p.tags))
+    for tag, _ := range target.tags {
+        if p.tags[tag] > 0 {
+            count += 1
+        } else {
+            union += 1
+        }
+    }
+    return 1 - count / union
+}
+
+/**
+  given a string representing a patent number and
+  a string representing the space-delimited list of
+  tags for a patent, returns a reference to a Patent
+  object
 */
 func makePatent(number, tagstring string) *Patent {
     p := new(Patent)

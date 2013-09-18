@@ -1,12 +1,13 @@
 package main
 
 import (
-  "math"
-  "strings"
-  "os"
-  "encoding/csv"
-  "io"
-  "fmt"
+	"bufio"
+	"encoding/csv"
+	"fmt"
+	"io"
+	"math"
+	"os"
+	"strings"
 )
 
 type Patent struct {
@@ -14,42 +15,42 @@ type Patent struct {
 	tags   map[string]int
 }
 
-/** 
-    Computes euclidian distance between two patents
-    by taking the square root of the number of tags
-    they do not have in common
+/**
+  Computes euclidian distance between two patents
+  by taking the square root of the number of tags
+  they do not have in common
 */
 func (p *Patent) EuclidianDistance(target *Patent) float64 {
-    var count float64
-    count = 0
-    for tag, _ := range target.tags {
-        if p.tags[tag] > 0 { // if tag in common, we count it
-           count += 1 
-        }
-    }
-    // distance is the square root of the total number of tags not in common
-    return math.Sqrt(number_of_tags - count)
+	var count float64
+	count = 0
+	for tag, _ := range target.tags {
+		if p.tags[tag] > 0 { // if tag in common, we count it
+			count += 1
+		}
+	}
+	// distance is the square root of the total number of tags not in common
+	return math.Sqrt(number_of_tags - count)
 }
 
 /**
-    Computes euclidian distance as above but normalizes to 0 - 1 
+  Computes euclidian distance as above but normalizes to 0 - 1
 */
 func (p *Patent) NormalizedEuclidianDistance(target *Patent) float64 {
-    return p.EuclidianDistance(target) / sqrt_num_tags
+	return p.EuclidianDistance(target) / sqrt_num_tags
 }
 
 func (p *Patent) JaccardDistance(target *Patent) float64 {
-    var count, union float64
-    count = 0
-    union = float64(len(p.tags))
-    for tag, _ := range target.tags {
-        if p.tags[tag] > 0 {
-            count += 1
-        } else {
-            union += 1
-        }
-    }
-    return 1 - count / union
+	var count, union float64
+	count = 0
+	union = float64(len(p.tags))
+	for tag, _ := range target.tags {
+		if p.tags[tag] > 0 {
+			count += 1
+		} else {
+			union += 1
+		}
+	}
+	return 1 - count/union
 }
 
 /**
@@ -59,19 +60,20 @@ func (p *Patent) JaccardDistance(target *Patent) float64 {
   object
 */
 func makePatent(number, tagstring string) *Patent {
-    p := new(Patent)
-    p.tags = make(map[string]int)
-    for _, tag := range strings.Split(tagstring, " ") {
-        p.tags[tag] = 1
-    }
-    p.number = number
-    return p
+	p := new(Patent)
+	p.tags = make(map[string]int)
+	for _, tag := range strings.Split(tagstring, " ") {
+		p.tags[tag] = 1
+	}
+	p.number = number
+	return p
 }
 
 var tagset = make(map[string]int)
 var patents = [](*Patent){}
 var number_of_tags float64
 var sqrt_num_tags float64
+var visited = make(map[string]int)
 
 /** enumerates all tags in the taglist and inserts them into `tagset */
 func extract_tags(taglist string) {
@@ -82,7 +84,7 @@ func extract_tags(taglist string) {
 }
 
 /**
-    reads buzzx.csv and accumulates all patent tags
+  reads buzzx.csv and accumulates all patent tags
 */
 func read_file() {
 	/* open buzzx.csv file and start counting tags */
@@ -107,13 +109,13 @@ func read_file() {
 		tags := record[3]
 		extract_tags(tags)
 	}
-    number_of_tags = float64(len(tagset))
-    sqrt_num_tags = math.Sqrt(number_of_tags)
+	number_of_tags = float64(len(tagset))
+	sqrt_num_tags = math.Sqrt(number_of_tags)
 }
 
 /**
-    loops through buzzx.csv and creates a patent instance
-    for each row
+  loops through buzzx.csv and creates a patent instance
+  for each row
 */
 func make_patents() {
 	/* open buzzx.csv file and start counting tags */
@@ -133,10 +135,10 @@ func make_patents() {
 			fmt.Println("Error:", err)
 			return
 		}
-        number := record[1]
+		number := record[0]
 		tags := record[3]
-        p := makePatent(number, tags)
-        patents = append(patents, p)
+		p := makePatent(number, tags)
+		patents = append(patents, p)
 	}
 }
 
@@ -149,7 +151,7 @@ func pairwise_run() {
 	for _, p1 := range patents {
 		for _, p := range patents {
 			key := p1.number + p.number
-            key2 := p.number + p1.number
+			key2 := p.number + p1.number
 			if (visited[key] == 0 || visited[key2] == 0) && p1.number != p.number {
 				res := p1.NormalizedEuclidianDistance(p)
 				fmt.Fprintln(w, res, p.number, p1.number)
@@ -160,15 +162,17 @@ func pairwise_run() {
 }
 
 func main() {
-    fmt.Println("Creating tag set...")
-    read_file()
-    fmt.Println("Accumulated", number_of_tags, "tags")
-    fmt.Println("Done creating tag set!")
-    fmt.Println("Making patent instances...")
-    make_patents()
-    fmt.Println("Finished", len(patents),"patent instances")
-    p1 := patents[1]
-    p2 := patents[2]
-    fmt.Println(p1.EuclidianDistance(p2))
-    fmt.Println(p1.NormalizedEuclidianDistance(p2))
+	fmt.Println("Creating tag set...")
+	read_file()
+	fmt.Println("Accumulated", number_of_tags, "tags")
+	fmt.Println("Done creating tag set!")
+	fmt.Println("Making patent instances...")
+	make_patents()
+	fmt.Println("Finished", len(patents), "patent instances")
+	p1 := patents[1]
+	p2 := patents[2]
+	fmt.Println(p1.EuclidianDistance(p2))
+	fmt.Println(p1.NormalizedEuclidianDistance(p2))
+	fmt.Println(p1.JaccardDistance(p2))
+	//pairwise_run()
 }

@@ -140,6 +140,24 @@ func make_patents() {
 	}
 }
 
+/**
+  for test purposes, do a pairwise comparison of all patents
+*/
+func pairwise_run() {
+	vectorfile, _ := os.Create("pairwise.txt")
+	w := bufio.NewWriter(vectorfile)
+	for _, p1 := range patents {
+		for _, p := range patents {
+			key := p1.number + p.number
+            key2 := p.number + p1.number
+			if (visited[key] == 0 || visited[key2] == 0) && p1.number != p.number {
+				res := p1.NormalizedEuclidianDistance(p)
+				fmt.Fprintln(w, res, p.number, p1.number)
+				visited[key] = 1
+			}
+		}
+	}
+}
 
 func main() {
     fmt.Println("Creating tag set...")

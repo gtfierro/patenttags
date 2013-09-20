@@ -20,3 +20,9 @@ _cgo_export.*
 _testmain.go
 
 *.exe
+
+# compiled Go files
+pattag
+
+# Python files
+*.pyc

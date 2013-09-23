@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+    "strings"
+    "os"
     "github.com/gtfierro/patentcluster"
 )
 
@@ -15,10 +17,12 @@ func practice_run(db *patentcluster.DBSCAN, patents [](*patentcluster.Patent)) {
 }
 
 func main() {
-    fmt.Println("reading from file")
-    patentcluster.Read_file("buzz500.csv")
+    filename := os.Args[1]
+    rootname := strings.Split(filename, ".")[0]
+    fmt.Println("reading from file", filename)
+    patentcluster.Read_file(filename)
     fmt.Println(len(patentcluster.Tagset), "unique tags")
-    patents := patentcluster.Make_patents("buzz5000.csv")
+    patents := patentcluster.Make_patents(filename)
     fmt.Println(len(patents), "unique patents")
     fmt.Println("Initializing DBSCAN...")
     db := patentcluster.Init_DBSCAN(patents, .9, 3)
@@ -30,5 +34,5 @@ func main() {
     fmt.Println("Mean cluster size:", mean_size)
     fmt.Println("Median cluster size:", median_size)
     fmt.Println("Largest cluster size:", largest)
-    db.To_file("buzz5000.out")
+    db.To_file(rootname+".out")
 }

@@ -49,5 +49,5 @@ func main() {
     fmt.Println("Mean cluster size:", mean_size)
     fmt.Println("Median cluster size:", median_size)
     fmt.Println("Largest cluster size:", largest)
-    db.To_file(rootname+".out")
+    db.To_file(rootname+".out", true)
 }

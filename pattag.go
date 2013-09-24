@@ -5,7 +5,12 @@ import (
     "strings"
     "os"
     "github.com/gtfierro/patentcluster"
+    "runtime/pprof"
+    "log"
+    "flag"
 )
+var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
+
 
 func practice_run(db *patentcluster.DBSCAN, patents [](*patentcluster.Patent)) {
     for _, pat := range patents {
@@ -17,12 +22,22 @@ func practice_run(db *patentcluster.DBSCAN, patents [](*patentcluster.Patent)) {
 }
 
 func main() {
+    flag.Parse()
+    if *cpuprofile != "" {
+        f, err := os.Create(*cpuprofile)
+        if err != nil {
+            log.Fatal(err)
+        }
+        pprof.StartCPUProfile(f)
+        defer pprof.StopCPUProfile()
+    }
+
     filename := os.Args[1]
     rootname := strings.Split(filename, ".")[0]
     fmt.Println("reading from file", filename)
-    patentcluster.Read_file(filename)
+    patentcluster.Read_file(filename, true)
     fmt.Println(len(patentcluster.Tagset), "unique tags")
-    patents := patentcluster.Make_patents(filename)
+    patents := patentcluster.Make_patents(filename, true)
     fmt.Println(len(patents), "unique patents")
     fmt.Println("Initializing DBSCAN...")
     db := patentcluster.Init_DBSCAN(patents, .9, 3)

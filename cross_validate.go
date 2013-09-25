@@ -23,6 +23,7 @@ func main() {
     fmt.Println(len(patentcluster.Tagset), "unique tags")
     patents := patentcluster.Make_patents(filename, true)
     fmt.Println(len(patents), "unique patents")
+    writer.WriteString("Epsilon, MinPts, Number of Clusters, Mean Cluster Size, Median Cluster Size, Largest Cluster Size\n")
     for epsilon := .5; epsilon <= .95; epsilon += .05 {
         for minpts := 3; minpts < 6; minpts += 1 {
             fmt.Println("Using epsilon =", epsilon,"and minpts =", minpts)
@@ -36,7 +37,7 @@ func main() {
             fmt.Println("Mean cluster size:", mean_size)
             fmt.Println("Median cluster size:", median_size)
             fmt.Println("Largest cluster size:", largest)
-            line := strconv.Itoa(num_clusters) +", " + strconv.FormatFloat(mean_size, 'g', -1, 64) + ", " + strconv.Itoa(median_size) + ", " + strconv.Itoa(largest) + "\n"
+            line := strconv.FormatFloat(epsilon, 'g', -1, 64) + ", " + strconv.Itoa(minpts) + ", " + strconv.Itoa(num_clusters) +", " + strconv.FormatFloat(mean_size, 'g', -1, 64) + ", " + strconv.Itoa(median_size) + ", " + strconv.Itoa(largest) + "\n"
             writer.WriteString(line)
         }
     }

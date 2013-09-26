@@ -14,6 +14,7 @@ from csv_reader import read_file
 from scipy import sparse
 from scipy.sparse import linalg
 import numpy as np
+import cPickle as pickle
 
 def construct_tagset(lines):
     """
@@ -108,3 +109,7 @@ if __name__ == '__main__':
     e1 = e.next()
     e2 = e.next()
     e3 = e.next()
+    d = {1: (e1[0], e1[1]),
+         2: (e2[0], e2[1]),
+         3: (e3[0], e3[1])}
+    pickle.dump(d, open('eigen.pickle','wa'))

@@ -108,10 +108,14 @@ if __name__ == '__main__':
     patents = construct_sparse_patent_matrix(lines, tagset)
     print 'Doing PCA...'
     e = get_n_eigenstuffs(patents, 3)
+    eigensum = e.next()
     e1 = e.next()
     e2 = e.next()
     e3 = e.next()
-    d = {1: (e1[0], e1[1]),
-         2: (e2[0], e2[1]),
-         3: (e3[0], e3[1])}
+    d = {1: (e1[0], e1[1].reshape(e1[1].shape[0], 1)),
+         2: (e2[0], e2[1].reshape(e2[1].shape[0], 1)),
+         3: (e3[0], e3[1].reshape(e3[1].shape[0], 1)),
+         'tagset': tagset,
+         'top2_variance': (e1[0] + e2[0]) / float(eigensum),
+         'top3_variance': (e1[0] + e2[0] + e3[0]) / float(eigensum)}
     pickle.dump(d, open('eigen.pickle','wa'))

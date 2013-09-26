@@ -35,9 +35,9 @@ func main() {
     filename := os.Args[1]
     rootname := strings.Split(filename, ".")[0]
     fmt.Println("reading from file", filename)
-    patentcluster.Read_file(filename, true)
+    data := patentcluster.Extract_file_contents(filename, true)
     fmt.Println(len(patentcluster.Tagset), "unique tags")
-    patents := patentcluster.Make_patents(filename, true)
+    patents := patentcluster.Make_patents(data)
     fmt.Println(len(patents), "unique patents")
     fmt.Println("Initializing DBSCAN...")
     db := patentcluster.Init_DBSCAN(patents, .9, 3)

@@ -88,9 +88,11 @@ def get_n_eigenstuffs(patents, n):
     print 'Converting to zero-mean...'
     cov = demean(cov)
     print 'Computing eigenthings...'
-    eigs = linalg.eigsh(cov, 10)
-    eigenvalues = eigs[0][::-1]
-    eigenvectors = eigs[1][::-1]
+    num_eigs = cov.shape[1]-1 # cov is symmetric, so rank is height-1
+    eigs = linalg.eigsh(cov, num_eigs) # compute all eigenvalues
+    yield eigs[0].sum()
+    eigenvalues = eigs[0][::-1] # reverse order
+    eigenvectors = eigs[1][::-1] # reverse order, then get top n
     for i, eigenvalue in enumerate(eigenvalues):
         yield eigenvalue, patentcsr * eigenvectors[:, i]
 

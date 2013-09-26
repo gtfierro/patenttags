@@ -23,6 +23,10 @@ _testmain.go
 
 # compiled Go files
 pattag
+cross_validate
+
+# Go profiles
+*.prof
 
 # Python files
 *.pyc

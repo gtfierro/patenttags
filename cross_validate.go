@@ -19,9 +19,9 @@ func main() {
     writer := bufio.NewWriter(outfile)
     filename := os.Args[1]
     fmt.Println("reading from file", filename)
-    patentcluster.Read_file(filename, true)
+    data := patentcluster.Extract_file_contents(filename, true)
     fmt.Println(len(patentcluster.Tagset), "unique tags")
-    patents := patentcluster.Make_patents(filename, true)
+    patents := patentcluster.Make_patents(data)
     fmt.Println(len(patents), "unique patents")
     writer.WriteString("Epsilon, MinPts, Number of Clusters, Mean Cluster Size, Median Cluster Size, Largest Cluster Size\n")
     for epsilon := .5; epsilon <= .95; epsilon += .05 {

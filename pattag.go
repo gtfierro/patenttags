@@ -40,7 +40,7 @@ func main() {
     patents := patentcluster.Make_patents(data)
     fmt.Println(len(patents), "unique patents")
     fmt.Println("Initializing DBSCAN...")
-    db := patentcluster.Init_DBSCAN(patents, .9, 3)
+    db := patentcluster.Init_DBSCAN(patents, .6, 4)
     fmt.Println("Running DBSCAN...")
     db.Run()
     fmt.Println("Finished running DBSCAN. Computing Stats...")

@@ -16,7 +16,7 @@ from scipy.sparse import linalg
 import numpy as np
 import cPickle as pickle
 
-def construct_tagset(lines):
+def construct_tagset(lines, cluster_ids=None):
     """
     Constructs a Python set() of all the tags
     
@@ -31,6 +31,8 @@ def construct_tagset(lines):
     tagset = set()
     num_lines = 0
     for line in lines:
+        # option to filter to only patents from a single cluster
+        if cluster_ids and line[1] not in cluster_ids: continue
         num_lines += 1
         tags = line[2].split(' ')
         tagset.update(tags)
@@ -57,8 +59,10 @@ def insert_sparse_patent(line, tagset, patents, col_idx):
         patents[index, col_idx] = 1
     return patents
 
-def construct_sparse_patent_matrix(lines, tagset):
+def construct_sparse_patent_matrix(lines, tagset, cluster_ids=None):
     patents = sparse.lil_matrix((num_tags, num_lines))
+    if cluster_ids:
+        lines = filter(lambda x: x[1] in cluster_ids, lines)
     for i, line in enumerate(lines):
         patents = insert_sparse_patent(line, tagset, patents, i)
     print patents.sum(1)
@@ -99,13 +103,14 @@ def get_n_eigenstuffs(patents, n):
 
 if __name__ == '__main__':
     inputfile = sys.argv[1]
+    cluster_ids = sys.argv[2].split(',') if len(sys.argv) > 2 else None
     lines = read_file(inputfile)
     print 'Constructing tagset...'
-    tagset, num_lines = construct_tagset(lines)
+    tagset, num_lines = construct_tagset(lines, cluster_ids)
     num_tags = len(tagset.keys())
     lines = read_file(inputfile)
     print 'Constructing sparse matrix...'
-    patents = construct_sparse_patent_matrix(lines, tagset)
+    patents = construct_sparse_patent_matrix(lines, tagset, cluster_ids)
     print 'Doing PCA...'
     e = get_n_eigenstuffs(patents, 3)
     eigensum = e.next()

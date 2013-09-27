@@ -23,3 +23,37 @@ This repository is a set of scripts meant to facilitate the processing of patent
 * `patent_PCA.py`
     * takes as input the output CSV file from `pattag` and computes the top 3 eigenvalues and vectors
       of the tagged data. Saves relevant metadata and output in `eigen.pickle`
+* `visualize.py`
+
+## Sample Pipeline
+
+Receive tagging file `buzzx.csv`. Run DBSCAN algorithm to obtain clusters:
+
+```
+go run pattag.go buzzx.csv
+```
+
+You will receive as output the file `buzzx.out`. Sort the file by clusters:
+
+```
+./sort_dbscan_output.sh buzzx.out
+```
+
+This will create a file `dbscansorted.csv`. Compute the eigenvalues/vectors for
+a patent by running. The final argument is an optional specification of a
+cluster identifier.  If a cluster identifier is specified, the PCA will only be
+performed for patents in that cluster.
+
+```
+python patent_PCA.py dbscansorted.csv 5002618
+```
+
+The output is the file `eigen.pickle` which is a Python cPickle file of relevant
+metadata about the eigenvectors/values of the PCA process. To visualize, run
+
+```
+python visualize.py dbscansorted.csv eigen.pickle 5002618
+```
+
+Again, the final argument is optional. If you specified it before, though, you
+should include it again, or you will get weird results.

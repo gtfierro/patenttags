@@ -34,7 +34,7 @@ def construct_tagset(lines, cluster_ids=None):
         # option to filter to only patents from a single cluster
         if cluster_ids and line[1] not in cluster_ids: continue
         num_lines += 1
-        tags = line[2].split(' ')
+        tags = line[3].split(' ')
         tagset.update(tags)
     tmp = enumerate(list(tagset))
     return dict((y,x) for x,y in tmp), num_lines
@@ -53,7 +53,7 @@ def insert_sparse_patent(line, tagset, patents, col_idx):
     Returns:
     scipy.sparse.lil_matrix containing the patent from `line`
     """
-    mytags = line[2].split(' ')
+    mytags = line[3].split(' ')
     for tag in mytags:
         index = tagset[tag]
         patents[index, col_idx] = 1

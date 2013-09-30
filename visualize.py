@@ -21,7 +21,7 @@ def get_coordinates(line, tagset, e1, e2, e3=None, dimensions=2):
     dimensions: number of dimensions we want to project our line into
     """
     patent = sparse.lil_matrix((len(tagset.keys()), 1))
-    mytags = line[2].split(' ')
+    mytags = line[3].split(' ')
     cluster = line[1]
     for tag in mytags:
         index = tagset[tag]

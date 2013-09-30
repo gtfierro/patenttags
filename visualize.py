@@ -3,7 +3,10 @@ import sys
 import numpy as np
 from scipy import sparse
 from csv_reader import read_file
+from collections import defaultdict
 import matplotlib.pyplot as plt
+import matplotlib.colors as colors
+import matplotlib.cm as cmx
 
 def get_coordinates(line, tagset, e1, e2, e3=None, dimensions=2):
     """
@@ -19,30 +22,35 @@ def get_coordinates(line, tagset, e1, e2, e3=None, dimensions=2):
     """
     patent = sparse.lil_matrix((len(tagset.keys()), 1))
     mytags = line[2].split(' ')
+    cluster = line[1]
     for tag in mytags:
         index = tagset[tag]
         patent[index, 0] = 1
     x = (patent.transpose() * e1)[0][0]
     y = (patent.transpose() * e2)[0][0]
     if dimensions == 2:
-        return x, y
+        return cluster, x, y
     if dimensions == 3:
         z = (patent.transpose() * e3)[0][0]
-        return x,y,z
+        return cluster, x, y, z
 
 def plot_patents(lines, tagset, e1, e2, e3=None, dimensions=2):
-    xcoords = []
-    ycoords = []
-    labels = []
+    clusters = []
+    plots = defaultdict(lambda: defaultdict(list))
     for line in lines:
-        x,y = get_coordinates(line, tagset, e1, e2)
-        xcoords.append(x)
-        ycoords.append(y)
-        labels.append(line[0])
-    plt.scatter(xcoords, ycoords)
-    for i, label in enumerate(labels):
-        plt.text(xcoords[i], ycoords[i], label)
-    plt.savefig('out.png')
+        cluster,x,y = get_coordinates(line, tagset, e1, e2)
+        plots[cluster]['xcoords'].append(x)
+        plots[cluster]['ycoords'].append(y)
+        clusters.append(cluster)
+    cm = plt.get_cmap('gist_rainbow')
+    colors = [cm(1.*i/len(set(clusters))) for i in xrange(len(set(clusters)))]
+    colormap = dict([(cluster, color) for cluster, color in zip(set(clusters), colors)])
+    scatters = []
+    for cluster in plots.iterkeys():
+        p = plt.scatter(plots[cluster]['xcoords'], plots[cluster]['ycoords'], color=colormap[cluster])
+        scatters.append(p)
+    lgd = plt.legend(scatters, plots.iterkeys(), loc='upper center', bbox_to_anchor=(0.5, -0.1))
+    plt.savefig('out.png', bbox_extra_artists=(lgd,), bbox_inches='tight')
 
 
 if __name__=='__main__':

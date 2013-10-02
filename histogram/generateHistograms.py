@@ -11,7 +11,7 @@ def makeHistogram(filename, outname):
     plt.hist(data, log=True)
     counts, bins, patches = ax.hist(data)
     ax.set_xticks(bins)
-    ax.xaxis.set_major_formatter(FormatStrFormatter('%0.1f'))
+    ax.xaxis.set_major_formatter(FormatStrFormatter('%0.2f'))
     bin_centers = 0.5 * np.diff(bins) + bins[:-1]
     for count, x in zip(counts, bin_centers):
         # Label the raw counts
@@ -24,7 +24,7 @@ def makeHistogram(filename, outname):
             rotation=45)
         # Give ourselves some more room at the bottom of the plot
         plt.subplots_adjust(bottom=0.30)
-    plt.xlabel("Jaccard Distance (1.0 is no shared tags)", labelpad=60)
+    plt.xlabel("Jaccard Similarity", labelpad=60)
     plt.ylabel("Number of Patents")
     plt.savefig(outname+'.png')
 

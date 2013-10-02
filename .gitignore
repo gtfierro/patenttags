@@ -30,3 +30,6 @@ cross_validate
 
 # Python files
 *.pyc
+
+# mac os x specific
+.DS_Store

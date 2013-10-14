@@ -19,6 +19,8 @@ def makeHistogram(filename, outname):
     plt.xlabel("Patent Application Date")
     plt.ylabel("Jaccard Similarity (1.0 is all shared tags) ")
     plt.savefig(outname+'.png')
+    plt.clf()
+    plt.close()
 
 if __name__=="__main__":
     beforefile, afterfile = sys.argv[1], sys.argv[2]

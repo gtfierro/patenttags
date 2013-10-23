@@ -6,7 +6,7 @@ both before and after.
 We can generate CSV files of these similarity scores for a given patent:
 
 ```
-go run generateHistogramData.go ../cleantech_data/raw_tags.csv 4303061
+go run generateHistogramData.go raw_tags.csv 4303061
 ```
 
 This will generate `after.csv` and `before.csv`, which each have the schema

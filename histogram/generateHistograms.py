@@ -5,8 +5,13 @@ import numpy as np
 from collections import Counter
 from matplotlib.ticker import FormatStrFormatter
 
-def makeHistogram(filename, outname):
+def makeHistogram(filename, outname, filterzeros=True):
     data = [float(x[1]) for x in read_file(filename)]
+    if filterzeros:
+        zeros = filter(lambda x: x == 0, data)
+        print "Zeros found", len(zeros)
+        nonzeros = filter(lambda x: x!= 0, data)
+        data = nonzeros
     fig, ax = plt.subplots()
     plt.hist(data, log=True)
     counts, bins, patches = ax.hist(data)
@@ -30,5 +35,6 @@ def makeHistogram(filename, outname):
 
 if __name__=="__main__":
     beforefile, afterfile = sys.argv[1], sys.argv[2]
-    makeHistogram(beforefile, 'before')
-    makeHistogram(afterfile, 'after')
+    filterzeros=sys.argv[3] if len(sys.argv) > 3 else True
+    makeHistogram(beforefile, 'before', filterzeros=filterzeros)
+    makeHistogram(afterfile, 'after', filterzeros=filterzeros)
